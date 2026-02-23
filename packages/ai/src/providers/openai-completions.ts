@@ -106,7 +106,18 @@ export const streamOpenAICompletions: StreamFunction<"openai-completions", OpenA
 			const client = createClient(model, context, apiKey, options?.headers);
 			const params = buildParams(model, context, options);
 			options?.onPayload?.(params);
-			const openaiStream = await client.chat.completions.create(params, { signal: options?.signal });
+
+			let openaiStream: AsyncIterable<ChatCompletionChunk>;
+			try {
+				openaiStream = await client.chat.completions.create(params, { signal: options?.signal });
+			} catch (createError) {
+				if (isThinkingRelatedError(createError)) {
+					stripThinkingParams(params);
+					openaiStream = await client.chat.completions.create(params, { signal: options?.signal });
+				} else {
+					throw createError;
+				}
+			}
 			stream.push({ type: "start", partial: output });
 
 			let currentBlock: TextContent | ThinkingContent | (ToolCall & { partialArgs?: string }) | null = null;
@@ -765,6 +776,8 @@ function detectCompat(model: Model<"openai-completions">): Required<OpenAIComple
 
 	const isZai = provider === "zai" || baseUrl.includes("api.z.ai");
 
+	const isNvidia = provider === "nvidia" || baseUrl.includes("nvidia.com");
+
 	const isNonStandard =
 		provider === "cerebras" ||
 		baseUrl.includes("cerebras.ai") ||
@@ -776,7 +789,8 @@ function detectCompat(model: Model<"openai-completions">): Required<OpenAIComple
 		baseUrl.includes("deepseek.com") ||
 		isZai ||
 		provider === "opencode" ||
-		baseUrl.includes("opencode.ai");
+		baseUrl.includes("opencode.ai") ||
+		isNvidia;
 
 	const useMaxTokens = provider === "mistral" || baseUrl.includes("mistral.ai") || baseUrl.includes("chutes.ai");
 
@@ -787,17 +801,17 @@ function detectCompat(model: Model<"openai-completions">): Required<OpenAIComple
 	return {
 		supportsStore: !isNonStandard,
 		supportsDeveloperRole: !isNonStandard,
-		supportsReasoningEffort: !isGrok && !isZai,
+		supportsReasoningEffort: !isGrok && !isZai && !isNvidia,
 		supportsUsageInStreaming: true,
-		maxTokensField: useMaxTokens ? "max_tokens" : "max_completion_tokens",
+		maxTokensField: useMaxTokens || isNvidia ? "max_tokens" : "max_completion_tokens",
 		requiresToolResultName: isMistral,
 		requiresAssistantAfterToolResult: false, // Mistral no longer requires this as of Dec 2024
-		requiresThinkingAsText: isMistral,
+		requiresThinkingAsText: isMistral || isNvidia,
 		requiresMistralToolIds: isMistral,
 		thinkingFormat: isZai ? "zai" : "openai",
 		openRouterRouting: {},
 		vercelGatewayRouting: {},
-		supportsStrictMode: true,
+		supportsStrictMode: !isNvidia,
 	};
 }
 
@@ -825,4 +839,30 @@ function getCompat(model: Model<"openai-completions">): Required<OpenAICompletio
 		vercelGatewayRouting: model.compat.vercelGatewayRouting ?? detected.vercelGatewayRouting,
 		supportsStrictMode: model.compat.supportsStrictMode ?? detected.supportsStrictMode,
 	};
+}
+
+/**
+ * Detect errors caused by incompatibility between thinking/reasoning and tool_use.
+ * Claude models on NVIDIA cannot do extended thinking and tool calls simultaneously.
+ * When detected, the caller should retry without thinking params.
+ */
+function isThinkingRelatedError(error: unknown): boolean {
+	const msg = error instanceof Error ? error.message : String(error);
+	return (
+		msg.includes("Expected `thinking`") ||
+		msg.includes("Expected thinking") ||
+		msg.includes("redacted_thinking") ||
+		msg.includes("budget_tokens") ||
+		(msg.includes("tool_use") && msg.includes("thinking")) ||
+		(msg.includes("tool_result") && msg.includes("tool_use"))
+	);
+}
+
+/**
+ * Strip all thinking/reasoning params from a request to retry without thinking.
+ */
+function stripThinkingParams(params: OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming): void {
+	delete params.reasoning_effort;
+	delete (params as any).thinking;
+	delete (params as any).enable_thinking;
 }

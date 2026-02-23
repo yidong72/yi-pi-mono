@@ -288,6 +288,7 @@ ${chalk.bold("Environment Variables:")}
   MISTRAL_API_KEY                  - Mistral API key
   MINIMAX_API_KEY                  - MiniMax API key
   KIMI_API_KEY                     - Kimi For Coding API key
+  NVIDIA_API_KEY                   - NVIDIA Inference API key
   AWS_PROFILE                      - AWS profile for Amazon Bedrock
   AWS_ACCESS_KEY_ID                - AWS access key for Amazon Bedrock
   AWS_SECRET_ACCESS_KEY            - AWS secret key for Amazon Bedrock

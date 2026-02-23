@@ -1305,6 +1305,164 @@ async function generateModels() {
 		}
 	}
 
+	// NVIDIA Inference API models
+	const NVIDIA_BASE_URL = "https://inference-api.nvidia.com/v1";
+	const NVIDIA_COST = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
+
+	// Codex models use v1/responses (openai-responses API)
+	const nvidiaCodexModels: Model<"openai-responses">[] = [
+		{
+			id: "openai/openai/gpt-5.2-codex",
+			name: "GPT-5.2 Codex (NVIDIA)",
+			api: "openai-responses",
+			provider: "nvidia",
+			baseUrl: NVIDIA_BASE_URL,
+			reasoning: true,
+			input: ["text", "image"],
+			cost: NVIDIA_COST,
+			contextWindow: 400000,
+			maxTokens: 128000,
+		},
+		{
+			id: "openai/openai/gpt-5.1-codex",
+			name: "GPT-5.1 Codex (NVIDIA)",
+			api: "openai-responses",
+			provider: "nvidia",
+			baseUrl: NVIDIA_BASE_URL,
+			reasoning: true,
+			input: ["text", "image"],
+			cost: NVIDIA_COST,
+			contextWindow: 400000,
+			maxTokens: 128000,
+		},
+		{
+			id: "openai/openai/gpt-5.1-codex-max",
+			name: "GPT-5.1 Codex Max (NVIDIA)",
+			api: "openai-responses",
+			provider: "nvidia",
+			baseUrl: NVIDIA_BASE_URL,
+			reasoning: true,
+			input: ["text", "image"],
+			cost: NVIDIA_COST,
+			contextWindow: 400000,
+			maxTokens: 128000,
+		},
+		{
+			id: "openai/openai/gpt-5-codex",
+			name: "GPT-5 Codex (NVIDIA)",
+			api: "openai-responses",
+			provider: "nvidia",
+			baseUrl: NVIDIA_BASE_URL,
+			reasoning: true,
+			input: ["text", "image"],
+			cost: NVIDIA_COST,
+			contextWindow: 400000,
+			maxTokens: 128000,
+		},
+	];
+	allModels.push(...nvidiaCodexModels);
+
+	// Chat-capable models use v1/chat/completions (openai-completions API)
+	const nvidiaCompletionsModels: Model<"openai-completions">[] = [
+		{
+			id: "openai/openai/gpt-5.1",
+			name: "GPT-5.1 (NVIDIA)",
+			api: "openai-completions",
+			provider: "nvidia",
+			baseUrl: NVIDIA_BASE_URL,
+			reasoning: false,
+			input: ["text", "image"],
+			cost: NVIDIA_COST,
+			contextWindow: 400000,
+			maxTokens: 128000,
+		},
+		{
+			id: "openai/openai/gpt-5.2",
+			name: "GPT-5.2 (NVIDIA)",
+			api: "openai-completions",
+			provider: "nvidia",
+			baseUrl: NVIDIA_BASE_URL,
+			reasoning: false,
+			input: ["text", "image"],
+			cost: NVIDIA_COST,
+			contextWindow: 400000,
+			maxTokens: 128000,
+		},
+		{
+			id: "aws/anthropic/bedrock-claude-opus-4-6",
+			name: "Claude Opus 4.6 (NVIDIA)",
+			api: "openai-completions",
+			provider: "nvidia",
+			baseUrl: NVIDIA_BASE_URL,
+			reasoning: true,
+			input: ["text", "image"],
+			cost: NVIDIA_COST,
+			contextWindow: 200000,
+			maxTokens: 8192,
+		},
+		{
+			id: "aws/anthropic/bedrock-claude-sonnet-4-6",
+			name: "Claude Sonnet 4.6 (NVIDIA)",
+			api: "openai-completions",
+			provider: "nvidia",
+			baseUrl: NVIDIA_BASE_URL,
+			reasoning: true,
+			input: ["text", "image"],
+			cost: NVIDIA_COST,
+			contextWindow: 200000,
+			maxTokens: 8192,
+		},
+		{
+			id: "gcp/google/gemini-2.5-pro",
+			name: "Gemini 2.5 Pro (NVIDIA)",
+			api: "openai-completions",
+			provider: "nvidia",
+			baseUrl: NVIDIA_BASE_URL,
+			reasoning: false,
+			input: ["text", "image"],
+			cost: NVIDIA_COST,
+			contextWindow: 1048576,
+			maxTokens: 65536,
+		},
+		{
+			id: "gcp/google/gemini-3-pro-preview",
+			name: "Gemini 3 Pro Preview (NVIDIA)",
+			api: "openai-completions",
+			provider: "nvidia",
+			baseUrl: NVIDIA_BASE_URL,
+			reasoning: false,
+			input: ["text", "image"],
+			cost: NVIDIA_COST,
+			contextWindow: 1000000,
+			maxTokens: 65536,
+		},
+		{
+			id: "gcp/google/gemini-2.5-flash",
+			name: "Gemini 2.5 Flash (NVIDIA)",
+			api: "openai-completions",
+			provider: "nvidia",
+			baseUrl: NVIDIA_BASE_URL,
+			reasoning: false,
+			input: ["text", "image"],
+			cost: NVIDIA_COST,
+			contextWindow: 1048576,
+			maxTokens: 65536,
+		},
+		{
+			id: "nvidia/openai/gpt-oss-120b",
+			name: "GPT-OSS 120B (NVIDIA)",
+			api: "openai-completions",
+			provider: "nvidia",
+			baseUrl: NVIDIA_BASE_URL,
+			reasoning: false,
+			input: ["text", "image"],
+			cost: NVIDIA_COST,
+			contextWindow: 128000,
+			maxTokens: 8192,
+		},
+	];
+	allModels.push(...nvidiaCompletionsModels);
+
 	const azureOpenAiModels: Model<Api>[] = allModels
 		.filter((model) => model.provider === "openai" && model.api === "openai-responses")
 		.map((model) => ({

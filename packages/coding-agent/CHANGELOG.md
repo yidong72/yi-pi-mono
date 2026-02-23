@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added NVIDIA as a supported provider with default model `openai/openai/gpt-5.2-codex` (GPT-5.2 Codex via v1/responses).
+
 ## [0.54.2] - 2026-02-23
 
 ### Fixed
