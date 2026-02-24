@@ -15,6 +15,7 @@ import { listModels } from "./cli/list-models.js";
 import { selectSession } from "./cli/session-picker.js";
 import { APP_NAME, getAgentDir, getModelsPath, VERSION } from "./config.js";
 import { AuthStorage } from "./core/auth-storage.js";
+import { discoverCursorProxyProvider } from "./core/cursor-proxy.js";
 import { DEFAULT_THINKING_LEVEL } from "./core/defaults.js";
 import { exportFromFile } from "./core/export-html/index.js";
 import type { LoadExtensionsResult } from "./core/extensions/index.js";
@@ -586,6 +587,12 @@ export async function main(args: string[]) {
 		modelRegistry.registerProvider(name, config);
 	}
 	extensionsResult.runtime.pendingProviderRegistrations = [];
+
+	// Discover cursor-proxy models if the proxy is reachable
+	const cursorProxyConfig = await discoverCursorProxyProvider();
+	if (cursorProxyConfig) {
+		modelRegistry.registerProvider("cursor-proxy", cursorProxyConfig);
+	}
 
 	const extensionFlags = new Map<string, { type: "boolean" | "string" }>();
 	for (const ext of extensionsResult.extensions) {

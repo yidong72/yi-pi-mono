@@ -7,6 +7,7 @@
 - Added support for NVIDIA Inference API provider (`nvidia`) using OpenAI-compatible API. Authenticate with `NVIDIA_API_KEY`.
 - Added NVIDIA GPT Codex models (`gpt-5.2-codex`, `gpt-5.1-codex`, `gpt-5.1-codex-max`, `gpt-5-codex`) via `openai-responses` API (v1/responses endpoint).
 - Added `nvidia` to `OPENAI_TOOL_CALL_PROVIDERS` for proper tool call ID normalization in the responses API.
+- Added `CURSOR_PROXY_API_KEY` env var mapping for the `cursor-proxy` provider.
 
 ## [0.54.2] - 2026-02-23
 

@@ -109,6 +109,7 @@ export function getEnvApiKey(provider: any): string | undefined {
 		opencode: "OPENCODE_API_KEY",
 		"kimi-coding": "KIMI_API_KEY",
 		nvidia: "NVIDIA_API_KEY",
+		"cursor-proxy": "CURSOR_PROXY_API_KEY",
 	};
 
 	const envVar = envMap[provider];

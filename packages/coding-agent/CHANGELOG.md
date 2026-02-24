@@ -5,6 +5,7 @@
 ### Added
 
 - Added NVIDIA as a supported provider with default model `openai/openai/gpt-5.2-codex` (GPT-5.2 Codex via v1/responses).
+- Added `cursor-proxy` provider: auto-discovers models from a local cursor_agent_proxy server (`http://127.0.0.1:3333/v1` by default, override with `CURSOR_PROXY_BASE_URL`).
 
 ## [0.54.2] - 2026-02-23
 
