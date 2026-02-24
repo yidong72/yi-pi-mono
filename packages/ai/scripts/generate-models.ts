@@ -1398,7 +1398,7 @@ async function generateModels() {
 			input: ["text", "image"],
 			cost: NVIDIA_COST,
 			contextWindow: 200000,
-			maxTokens: 8192,
+			maxTokens: 32000,
 		},
 		{
 			id: "aws/anthropic/bedrock-claude-sonnet-4-6",
@@ -1410,7 +1410,7 @@ async function generateModels() {
 			input: ["text", "image"],
 			cost: NVIDIA_COST,
 			contextWindow: 200000,
-			maxTokens: 8192,
+			maxTokens: 32000,
 		},
 		{
 			id: "gcp/google/gemini-2.5-pro",

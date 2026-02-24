@@ -4907,7 +4907,7 @@ export const MODELS = {
 				cacheWrite: 0,
 			},
 			contextWindow: 200000,
-			maxTokens: 8192,
+			maxTokens: 32000,
 		} satisfies Model<"openai-completions">,
 		"aws/anthropic/bedrock-claude-sonnet-4-6": {
 			id: "aws/anthropic/bedrock-claude-sonnet-4-6",
@@ -4924,7 +4924,7 @@ export const MODELS = {
 				cacheWrite: 0,
 			},
 			contextWindow: 200000,
-			maxTokens: 8192,
+			maxTokens: 32000,
 		} satisfies Model<"openai-completions">,
 		"gcp/google/gemini-2.5-flash": {
 			id: "gcp/google/gemini-2.5-flash",
